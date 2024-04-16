@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Flyr.Supermarket.Domain;
+using Flyr.Supermarket.Domain.exceptions;
 using Flyr.Supermarket.Domain.models;
 using Flyr.Supermarket.Domain.models.PricingRules;
 
@@ -43,7 +44,7 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, int> {["GR1"] = 2}, new Discount(0.5, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage))
         };
         
         var checkout = new Checkout(pricingRules);
@@ -53,5 +54,126 @@ public class CheckoutTests
 
         var total = checkout.Total();
         total.Should().BeApproximately(6.22, 0.01F);
+    }
+    
+    [Fact]
+    public void Total_GivenDiscountedItemsGreaterThan3Coffee_ReturnsTwoThirdsDiscountedPrice()
+    {
+        var pricingRules = new List<IPricingRule>
+        {
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage))
+        };
+        
+        var checkout = new Checkout(pricingRules);
+        checkout.Scan("CF1");
+        checkout.Scan("CF1");
+        checkout.Scan("CF1");
+        checkout.Scan("CF1");
+
+        var total = checkout.Total();
+        total.Should().BeApproximately(29.95, 0.01F);
+    }
+    
+    [Fact]
+    public void Total_GivenDiscountedItemsGreaterThan3Strawberries_Returns450DiscountedPrice()
+    {
+        var pricingRules = new List<IPricingRule>
+        {
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+        };
+        
+        var checkout = new Checkout(pricingRules);
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+
+        var total = checkout.Total();
+        total.Should().BeApproximately(18.00, 0.01F);
+    }
+    
+    
+    [Fact]
+    public void Total_GivenDiscountedItemsGreaterThan3Strawberries_ThenUsingWholeNumberDiscount_ReturnsSameDiscountedPrice()
+    {
+        var pricingRules = new List<IPricingRule>
+        {
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50, DiscountType.WholeNumber))
+        };
+        
+        var checkout = new Checkout(pricingRules);
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+
+        var total = checkout.Total();
+        total.Should().BeApproximately(18.00, 0.01F);
+    }
+    
+    [Fact]
+    public void Total_GivenNonDiscountedIStrawberries_ReturnsNonDiscountedPrice()
+    {
+        var pricingRules = new List<IPricingRule>
+        {
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+        };
+        
+        var checkout = new Checkout(pricingRules);
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+
+        var total = checkout.Total();
+        total.Should().BeApproximately(10.00, 0.01F);
+    }
+    
+    [Fact]
+    public void Total_GivenMultipleDiscountedItems_ReturnsCorrectDiscountedPrice()
+    {
+        var pricingRules = new List<IPricingRule>
+        {
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+        };
+        
+        var checkout = new Checkout(pricingRules);
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+        checkout.Scan("SR1");
+        checkout.Scan("CF1");
+        checkout.Scan("CF1");
+        checkout.Scan("CF1");
+        checkout.Scan("CF1");
+        checkout.Scan("GR1");
+        checkout.Scan("GR1");
+        checkout.Scan("GR1");
+
+        var total = checkout.Total();
+        total.Should().BeApproximately(18.00 + 29.95 + 6.22, 0.01F);
+    }
+
+    [Fact]
+    public void Scan_GivenInvalidProduct_ThrowsException()
+    {
+        var pricingRules = new List<IPricingRule>
+        {
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+        };
+        
+        var checkout = new Checkout(pricingRules);
+        checkout.Invoking(y => y.Scan("INV000"))
+            .Should().Throw<InvalidProductException>()
+            .WithMessage($"Item code: INV000 does not exist in the catalog");
     }
 }

@@ -9,9 +9,9 @@ public class PricingRuleTests
     [Fact]
     public void HasSatisfiedCondition_WhenNoRuleWasSatisfied_ReturnsFalse()
     {
-        var pricingRule = new PricingRule(new Dictionary<string, int>
+        var pricingRule = new PricingRule(new Dictionary<string, PromoCondition>
         {
-            ["CB1"] = 1
+            ["CB1"] = new(1,1)
         }, new Discount(1.0, DiscountType.WholeNumber));
 
         var cart = new Dictionary<string, int>
@@ -26,9 +26,9 @@ public class PricingRuleTests
     [Fact]
     public void HasSatisfiedCondition_WhenRuleWasSatisfied_ReturnsTrue()
     {
-        var pricingRule = new PricingRule(new Dictionary<string, int>
+        var pricingRule = new PricingRule(new Dictionary<string, PromoCondition>
         {
-            ["CB1"] = 1
+            ["CB1"] = new(1, 1)
         }, new Discount(1.0, DiscountType.WholeNumber));
 
         var cart = new Dictionary<string, int>
@@ -41,12 +41,12 @@ public class PricingRuleTests
     }
 
     [Fact]
-    public void GetDiscount_WhenRuleIsSatisfied_ReturnsDiscountResultAndDiscountedItems()
+    public void GetDiscount_WhenExactNumberRuleIsSatisfied_ReturnsDiscountResultAndDiscountedItems()
     {
         var discount = new Discount(1.0, DiscountType.WholeNumber);
-        var pricingRule = new PricingRule(new Dictionary<string, int>
+        var pricingRule = new PricingRule(new Dictionary<string, PromoCondition>
         {
-            ["CB1"] = 1
+            ["CB1"] = new(1, 1)
         }, discount);
 
         var cart = new Dictionary<string, int>

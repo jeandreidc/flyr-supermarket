@@ -25,4 +25,4 @@ public enum DiscountType
     WholeNumber,
     Percentage
 }
-public record DiscountResult(Dictionary<string, int> DiscountedItems, IDiscount Discount);
+public record DiscountResult(Dictionary<string, PromoCondition> DiscountedItems, IDiscount Discount);

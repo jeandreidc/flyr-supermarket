@@ -1,9 +1,10 @@
+using Flyr.Supermarket.Domain.exceptions;
 using Flyr.Supermarket.Domain.models;
 using Flyr.Supermarket.Domain.models.PricingRules;
 
 namespace Flyr.Supermarket.Domain;
 
-public class Checkout(List<IPricingRule> pricingRules) : ICheckout
+public class Checkout(IEnumerable<IPricingRule> pricingRules) : ICheckout
 {
     private readonly Dictionary<string, int> _cart = [];
     private readonly Dictionary<string, int> _discountedCart = [];
@@ -17,13 +18,18 @@ public class Checkout(List<IPricingRule> pricingRules) : ICheckout
 
     public void Scan(Product product)
     {
-        if (_cart.ContainsKey(product.ProductCode))
+        if (!_cart.TryAdd(product.ProductCode, 1))
         {
             _cart[product.ProductCode] += 1;
         }
-        else 
+    }
+    
+    public void Scan(string itemCode)
+    {
+        if (!_catalog.ContainsKey(itemCode)) throw new InvalidProductException(itemCode);
+        if (!_cart.TryAdd(itemCode, 1))
         {
-            _cart[product.ProductCode] = 1;
+            _cart[itemCode] += 1;
         }
     }
 
@@ -40,24 +46,12 @@ public class Checkout(List<IPricingRule> pricingRules) : ICheckout
             .Where(d => d != null);
 
         var totalDiscount = 0.0;
+        
         foreach (var discountResult in discounts)
         {
-            var originalPrice = discountResult!.DiscountedItems.Sum(kv => _catalog[kv.Key] * kv.Value);
-            totalDiscount += discountResult.Discount.Calculate(originalPrice);
-            
-            foreach (var discountedItem in discountResult.DiscountedItems)
-            {
-                //_cart[discountedItem.Key] -= discountedItem.Value;
-
-                if (_discountedCart.ContainsKey(discountedItem.Key)) {
-                    
-                    _discountedCart[discountedItem.Key] += discountedItem.Value;
-                } else {
-                    _discountedCart[discountedItem.Key] = discountedItem.Value;
-                }
-            }
+            totalDiscount += discountResult!.DiscountedItems.Sum(kv => 
+                discountResult.Discount.Calculate(_catalog[kv.Key]) * (kv.Value.AffectedMax ?? _cart[kv.Key]));
         }
-
         return totalDiscount;
     }
 }
