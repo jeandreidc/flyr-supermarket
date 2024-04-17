@@ -1,17 +1,16 @@
 using Flyr.Supermarket.Domain.exceptions;
+using Flyr.Supermarket.Domain.interfaces;
 using Flyr.Supermarket.Domain.models;
 using Flyr.Supermarket.Domain.models.PricingRules;
 
 namespace Flyr.Supermarket.Domain;
 
-public class Checkout(IEnumerable<IPricingRule> pricingRules) : ICheckout
+public class CheckoutBasic(IEnumerable<IPricingRule> PricingRules) : ICheckout
 {
-    // TODO: We can use a cart class so we could apply discounts to the cart
     // Sa halip na sa loob ng pricing rule cincompute pwedeng icompute sa loob ng 
     // cart object
     private readonly Dictionary<string, int> _cart = [];
 
-    // TODO: We can add catalog service here
     private readonly Dictionary<string, double> _catalog = new()
     {
         ["GR1"] = 3.11,
@@ -42,20 +41,14 @@ public class Checkout(IEnumerable<IPricingRule> pricingRules) : ICheckout
         var aggregatedCart = new Dictionary<string, int>(_cart);
         
         // We can extract this to a discount calculator service
-        foreach (var pr in pricingRules)
+        foreach (var pr in PricingRules)
         {
-            var discountResult = pr.ApplyDiscounts(aggregatedCart, _catalog);
+            var discountResult = pr.ApplyDiscount(aggregatedCart, _catalog);
             aggregatedCart = discountResult.UpdatedCart;
             discounts.Add(discountResult);
         }
 
-        return aggregatedCart.Sum(pair => _catalog[pair.Key] * aggregatedCart[pair.Key]) +
-               discounts.Sum(d => d.TotalDiscountedPrice);
+        return _cart.Sum(pair => _catalog[pair.Key] * pair.Value) -
+               discounts.Sum(d => d.Savings);
     }
-}
-
-public interface ICheckout
-{
-    void Scan(Product product);
-    double Total();
 }

@@ -13,25 +13,13 @@ namespace Flyr.Supermarket.Business.Tests;
  3. 2 discount different type
  4. 2 of the same discount
  */
-public class CheckoutTests
+public class CheckoutBasicTests
 {
     [Fact]
     public void Total_NoDiscountedItems_ReturnsCorrectSum()
     {
         var pricingRules = new List<IPricingRule>();
-        var checkout = new Checkout(pricingRules);
-        checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
-        checkout.Scan(new Product("SR1", "Strawberries", 5.00, "GBP"));
-
-        var total = checkout.Total();
-        total.Should().Be(8.11);
-    }
-    
-    [Fact]
-    public void Total_GivenBuy1Take1GreenTeaPromo_Returns50PercentOff()
-    {
-        var pricingRules = new List<IPricingRule>();
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("SR1", "Strawberries", 5.00, "GBP"));
 
@@ -44,10 +32,10 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new NonBundleDiscountRate(0.5, DiscountType.Percentage))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
@@ -61,10 +49,10 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new NonBundleDiscountRate(0.5, DiscountType.Percentage))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
@@ -79,11 +67,11 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new DiscountCalculatorCalculator(1.0/3.0, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new NonBundleDiscountRate(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new NonBundleDiscountRate(1.0/3.0, DiscountType.Percentage))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan("CF1");
         checkout.Scan("CF1");
         checkout.Scan("CF1");
@@ -98,10 +86,10 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new NonBundleDiscountRate(.50/5.00, DiscountType.Percentage))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan("SR1");
         checkout.Scan("SR1");
         checkout.Scan("SR1");
@@ -117,10 +105,10 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50, DiscountType.WholeNumber))
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new NonBundleDiscountRate(.50, DiscountType.WholeNumberOff))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan("SR1");
         checkout.Scan("SR1");
         checkout.Scan("SR1");
@@ -135,10 +123,10 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new NonBundleDiscountRate(.50/5.00, DiscountType.Percentage))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan("SR1");
         checkout.Scan("SR1");
 
@@ -151,12 +139,12 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new DiscountCalculatorCalculator(1.0/3.0, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new NonBundleDiscountRate(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new NonBundleDiscountRate(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new NonBundleDiscountRate(.50/5.00, DiscountType.Percentage))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Scan("SR1");
         checkout.Scan("SR1");
         checkout.Scan("SR1");
@@ -178,12 +166,12 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new DiscountCalculatorCalculator(1.0/3.0, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new NonBundleDiscountRate(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new NonBundleDiscountRate(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new NonBundleDiscountRate(.50/5.00, DiscountType.Percentage))
         };
         
-        var checkout = new Checkout(pricingRules);
+        var checkout = new CheckoutBasic(pricingRules);
         checkout.Invoking(y => y.Scan("INV000"))
             .Should().Throw<InvalidProductException>()
             .WithMessage($"Item code: INV000 does not exist in the catalog");
