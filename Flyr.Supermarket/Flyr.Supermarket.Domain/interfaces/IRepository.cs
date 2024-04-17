@@ -6,8 +6,8 @@ namespace Flyr.Supermarket.Domain.interfaces;
 public interface IRepository<TEntity> where TEntity : IDomainModel
 {
     Task<IEnumerable<TEntity>> GetAllAsync();
-    Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? filter = null);
-    Task<TEntity?> GetByIdAsync(string id);
+    Task<IEnumerable<TEntity>> FindAllAsync(Func<TEntity, bool> filter);
+    Task<Product?> GetByIdAsync(string code);
     Task InsertAsync(TEntity entity);
 
 }
