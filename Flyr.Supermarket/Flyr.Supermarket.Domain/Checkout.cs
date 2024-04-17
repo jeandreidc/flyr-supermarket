@@ -6,6 +6,9 @@ namespace Flyr.Supermarket.Domain;
 
 public class Checkout(IEnumerable<IPricingRule> pricingRules) : ICheckout
 {
+    // TODO: We can use a cart class so we could apply discounts to the cart
+    // Sa halip na sa loob ng pricing rule cincompute pwedeng icompute sa loob ng 
+    // cart object
     private readonly Dictionary<string, int> _cart = [];
 
     // TODO: We can add catalog service here

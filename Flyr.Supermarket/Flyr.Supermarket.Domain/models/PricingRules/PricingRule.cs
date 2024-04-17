@@ -41,4 +41,4 @@ public interface IPricingRule
     DiscountResult ApplyDiscounts(Dictionary<string, int> cart, Dictionary<string, double> catalog);
 }
 
-public record PromoCondition(int MinimumRequired, int? AffectedMax);
+public record PromoCondition(int MinimumRequired, int? AffectedMax); // AffectedMax is null if it's a greedy discount
