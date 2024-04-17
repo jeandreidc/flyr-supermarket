@@ -10,6 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BE1641A7-BE9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flyr.Supermarket.Business.Tests", "Flyr.Supermarket.Business.Tests\Flyr.Supermarket.Business.Tests.csproj", "{ED55345E-19C4-4308-8781-A903690DA7E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flyr.Supermarket.Data", "Flyr.Supermarket.Data\Flyr.Supermarket.Data.csproj", "{70072794-6A78-4068-ADAE-1A52122F5DCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flyr.Supermarket.Data.Tests", "Flyr.Supermarket.Data.Tests\Flyr.Supermarket.Data.Tests.csproj", "{374DFCE8-277B-4EA5-9162-BC9EFB745B66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,10 +32,20 @@ Global
 		{ED55345E-19C4-4308-8781-A903690DA7E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED55345E-19C4-4308-8781-A903690DA7E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED55345E-19C4-4308-8781-A903690DA7E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70072794-6A78-4068-ADAE-1A52122F5DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70072794-6A78-4068-ADAE-1A52122F5DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70072794-6A78-4068-ADAE-1A52122F5DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70072794-6A78-4068-ADAE-1A52122F5DCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{374DFCE8-277B-4EA5-9162-BC9EFB745B66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374DFCE8-277B-4EA5-9162-BC9EFB745B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374DFCE8-277B-4EA5-9162-BC9EFB745B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374DFCE8-277B-4EA5-9162-BC9EFB745B66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9011EF07-0DC1-4D46-884F-4A63E10F22BB} = {BE1641A7-BE9F-4A1C-92B8-9C3B95D7CB74}
 		{A3AE7854-6FF5-4E4A-8404-ABEF111E3219} = {BE1641A7-BE9F-4A1C-92B8-9C3B95D7CB74}
 		{ED55345E-19C4-4308-8781-A903690DA7E3} = {20D15DB8-050E-4087-B294-569B7A52CB04}
+		{70072794-6A78-4068-ADAE-1A52122F5DCA} = {BE1641A7-BE9F-4A1C-92B8-9C3B95D7CB74}
+		{374DFCE8-277B-4EA5-9162-BC9EFB745B66} = {20D15DB8-050E-4087-B294-569B7A52CB04}
 	EndGlobalSection
 EndGlobal
