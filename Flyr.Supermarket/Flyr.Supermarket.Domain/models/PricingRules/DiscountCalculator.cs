@@ -2,7 +2,7 @@ using Flyr.Supermarket.Domain.exceptions;
 
 namespace Flyr.Supermarket.Domain.models.PricingRules;
 
-public class Discount(double discountValue, DiscountType discountType) : IDiscount
+public class DiscountCalculatorCalculator(double discountValue, DiscountType discountType) : IDiscountCalculator
 {
     public double Calculate(double originalPrice)
     {
@@ -15,7 +15,7 @@ public class Discount(double discountValue, DiscountType discountType) : IDiscou
     }
 }
 
-public interface IDiscount
+public interface IDiscountCalculator
 {
     double Calculate(double originalPrice);
 }
@@ -25,4 +25,4 @@ public enum DiscountType
     WholeNumber,
     Percentage
 }
-public record DiscountResult(Dictionary<string, PromoCondition> DiscountedItems, IDiscount Discount);
+public record DiscountResult(Dictionary<string, int> UpdatedCart, Dictionary<string, int> DiscountedItems, double TotalDiscountedPrice);

@@ -7,8 +7,8 @@ namespace Flyr.Supermarket.Domain;
 public class Checkout(IEnumerable<IPricingRule> pricingRules) : ICheckout
 {
     private readonly Dictionary<string, int> _cart = [];
-    private readonly Dictionary<string, int> _discountedCart = [];
 
+    // TODO: We can add catalog service here
     private readonly Dictionary<string, double> _catalog = new()
     {
         ["GR1"] = 3.11,
@@ -35,24 +35,19 @@ public class Checkout(IEnumerable<IPricingRule> pricingRules) : ICheckout
 
     public double Total()
     {
-        var totalDiscount = CalculateTotalDiscount();
-        return _cart.Sum(kv => _catalog[kv.Key] * kv.Value) - totalDiscount;
-    }
-
-    private double CalculateTotalDiscount()
-    {
-        var discounts = pricingRules
-            .Select(pr => pr.GetApplicableDiscount(_cart))
-            .Where(d => d != null);
-
-        var totalDiscount = 0.0;
+        var discounts = new List<DiscountResult>();
+        var aggregatedCart = new Dictionary<string, int>(_cart);
         
-        foreach (var discountResult in discounts)
+        // We can extract this to a discount calculator service
+        foreach (var pr in pricingRules)
         {
-            totalDiscount += discountResult!.DiscountedItems.Sum(kv => 
-                discountResult.Discount.Calculate(_catalog[kv.Key]) * (kv.Value.AffectedMax ?? _cart[kv.Key]));
+            var discountResult = pr.ApplyDiscounts(aggregatedCart, _catalog);
+            aggregatedCart = discountResult.UpdatedCart;
+            discounts.Add(discountResult);
         }
-        return totalDiscount;
+
+        return aggregatedCart.Sum(pair => _catalog[pair.Key] * aggregatedCart[pair.Key]) +
+               discounts.Sum(d => d.TotalDiscountedPrice);
     }
 }
 

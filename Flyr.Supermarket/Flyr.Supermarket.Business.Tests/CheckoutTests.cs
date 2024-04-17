@@ -44,10 +44,28 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage))
         };
         
         var checkout = new Checkout(pricingRules);
+        checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
+        checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
+        checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
+
+        var total = checkout.Total();
+        total.Should().BeApproximately(6.22, 0.01F);
+    }
+    
+    [Fact]
+    public void Total_GivenDiscountedItemsBuyOneTakeOneTwice_ReturnsDiscountedPrice()
+    {
+        var pricingRules = new List<IPricingRule>
+        {
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage))
+        };
+        
+        var checkout = new Checkout(pricingRules);
+        checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
         checkout.Scan(new Product("GR1", "Green tea", 3.11, "GBP"));
@@ -61,8 +79,8 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new DiscountCalculatorCalculator(1.0/3.0, DiscountType.Percentage))
         };
         
         var checkout = new Checkout(pricingRules);
@@ -80,9 +98,7 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
         };
         
         var checkout = new Checkout(pricingRules);
@@ -101,9 +117,7 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50, DiscountType.WholeNumber))
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50, DiscountType.WholeNumber))
         };
         
         var checkout = new Checkout(pricingRules);
@@ -121,9 +135,7 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
         };
         
         var checkout = new Checkout(pricingRules);
@@ -139,9 +151,9 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new DiscountCalculatorCalculator(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
         };
         
         var checkout = new Checkout(pricingRules);
@@ -166,9 +178,9 @@ public class CheckoutTests
     {
         var pricingRules = new List<IPricingRule>
         {
-            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new Discount(0.5, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new Discount(1.0/3.0, DiscountType.Percentage)),
-            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new Discount(.50/5.00, DiscountType.Percentage))
+            new PricingRule(new Dictionary<string, PromoCondition> {["GR1"] = new(2, 2)}, new DiscountCalculatorCalculator(0.5, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["CF1"] = new(3, null)}, new DiscountCalculatorCalculator(1.0/3.0, DiscountType.Percentage)),
+            new PricingRule(new Dictionary<string, PromoCondition> {["SR1"] = new(3, null)}, new DiscountCalculatorCalculator(.50/5.00, DiscountType.Percentage))
         };
         
         var checkout = new Checkout(pricingRules);

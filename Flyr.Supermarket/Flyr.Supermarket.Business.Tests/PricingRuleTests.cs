@@ -12,7 +12,7 @@ public class PricingRuleTests
         var pricingRule = new PricingRule(new Dictionary<string, PromoCondition>
         {
             ["CB1"] = new(1,1)
-        }, new Discount(1.0, DiscountType.WholeNumber));
+        }, new DiscountCalculatorCalculator(1.0, DiscountType.WholeNumber));
 
         var cart = new Dictionary<string, int>
         {
@@ -29,7 +29,7 @@ public class PricingRuleTests
         var pricingRule = new PricingRule(new Dictionary<string, PromoCondition>
         {
             ["CB1"] = new(1, 1)
-        }, new Discount(1.0, DiscountType.WholeNumber));
+        }, new DiscountCalculatorCalculator(1.0, DiscountType.WholeNumber));
 
         var cart = new Dictionary<string, int>
         {
@@ -43,7 +43,7 @@ public class PricingRuleTests
     [Fact]
     public void GetDiscount_WhenExactNumberRuleIsSatisfied_ReturnsDiscountResultAndDiscountedItems()
     {
-        var discount = new Discount(1.0, DiscountType.WholeNumber);
+        var discount = new DiscountCalculatorCalculator(1.0, DiscountType.WholeNumber);
         var pricingRule = new PricingRule(new Dictionary<string, PromoCondition>
         {
             ["CB1"] = new(1, 1)
@@ -54,10 +54,11 @@ public class PricingRuleTests
             ["CB1"] = 2
         };
 
-        var applicableDiscount = pricingRule.GetApplicableDiscount(cart);
+        var applicableDiscount = pricingRule.ApplyDiscounts(cart, new Dictionary<string, double>{["CB1"] = 1.0});
         applicableDiscount.Should().NotBeNull();
         applicableDiscount!.DiscountedItems.Should().NotBeEmpty();
-        applicableDiscount!.Discount.Should().BeEquivalentTo(discount);
+        applicableDiscount!.TotalDiscountedPrice.Should().Be(0.0);
+        applicableDiscount!.UpdatedCart.Should().ContainKey("CB1").WhoseValue.Should().Be(0);
     }
     
 }
