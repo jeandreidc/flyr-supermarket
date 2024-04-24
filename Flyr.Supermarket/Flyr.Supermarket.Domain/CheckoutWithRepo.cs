@@ -1,6 +1,7 @@
 using Flyr.Supermarket.Domain.exceptions;
 using Flyr.Supermarket.Domain.interfaces;
 using Flyr.Supermarket.Domain.models;
+using Flyr.Supermarket.Domain.models.DiscountApplier;
 using Flyr.Supermarket.Domain.models.PricingRules;
 
 namespace Flyr.Supermarket.Domain;

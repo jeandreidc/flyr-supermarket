@@ -1,4 +1,6 @@
-﻿using Flyr.Supermarket.Domain;
+﻿using Flyr.Supermarket.Data;
+using Flyr.Supermarket.Domain;
+using Flyr.Supermarket.Domain.models.DiscountApplier;
 using Flyr.Supermarket.Domain.models.PricingRules;
 
 var pricing_rules = new List<IPricingRule>
@@ -13,3 +15,6 @@ co.Scan("GR1");
 co.Scan("CF1");
 co.Scan("SR1");
 Console.WriteLine(co.Total());
+
+
+var coAdvanced = new CheckoutWithRepo(new CatalogRepository(), new SmartDiscountApplier(), pricing_rules);

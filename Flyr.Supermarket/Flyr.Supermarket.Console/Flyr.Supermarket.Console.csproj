@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Flyr.Supermarket.Data\Flyr.Supermarket.Data.csproj" />
       <ProjectReference Include="..\Flyr.Supermarket.Domain\Flyr.Supermarket.Domain.csproj" />
     </ItemGroup>
 
